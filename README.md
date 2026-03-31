@@ -1,8 +1,7 @@
 # Equity Premium Forecasting with Reliability-Screened Forward-Looking Signals
 
-<!-- After Zenodo DOI is issued, uncomment and replace XXXXXXX:
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
--->
+
 
 Replication code for the two-stage equity risk premium forecasting framework described in:
 
