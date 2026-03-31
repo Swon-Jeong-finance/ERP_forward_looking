@@ -1,9 +1,15 @@
-# Robust Risk Premium Forecasting
+# Equity Premium Forecasting with Reliability-Screened Forward-Looking Signals
 
-Replication code for a two-stage equity risk premium forecasting framework.
+<!-- After Zenodo DOI is issued, uncomment and replace XXXXXXX:
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXX)
+-->
 
-- **Stage 1:** predictor-level forecasting (ARIMAX / ETS / GPR) with mixed-frequency alignment and real-time publication lags.
-- **Stage 2:** equity risk premium forecasting with Random Forest, optional SHAP screening and dimension reduction (PCA / PLS), and forecast evaluation.
+Replication code for the two-stage equity risk premium forecasting framework described in:
+
+> Huh, J., Jeon, J., & Jeong, S. (2026). Equity Premium Forecasting with Reliability-Screened Forward-Looking Signals. *PLOS ONE* (under review).
+
+- **Stage 1:** Predictor-level forecasting (ARIMAX–GARCH) with mixed-frequency alignment and real-time publication lags. The main results use ARIMAX–GARCH; ETS and GPR alternatives are provided for the supplementary robustness exercises (S1 Appendix).
+- **Stage 2:** Equity risk premium forecasting with Random Forest, optional SHAP screening and dimension reduction (PCA / PLS), and forecast evaluation. Supplementary results with XGBoost and LightGBM are reported in S2 Appendix.
 
 Third-party raw data files are **not distributed**; see [Data](#data) below.
 
@@ -21,7 +27,7 @@ Third-party raw data files are **not distributed**; see [Data](#data) below.
 └── stage2/
     ├── data/                    # local, not distributed
     ├── benchmark/               # benchmark portfolio scripts
-    ├── output/
+    ├── output/                  # summary tables (see Output Mapping)
     ├── analysis.py
     ├── collect_vol_qlike.py
     ├── config.py
@@ -47,8 +53,10 @@ stage1/data/                     stage2/data/
 
 **Sources:**
 
-- `monthly.csv`, `quarterly.csv`, `yearly.csv` — constructed from the publicly downloadable predictor data on [Amit Goyal's website](https://sites.google.com/view/agoyal145).
-- `crsp_index.csv` — CRSP value-weighted market index returns. Restricted-access; obtain through WRDS/CRSP.
+- `monthly.csv`, `quarterly.csv`, `yearly.csv` — constructed from the publicly available predictor dataset compiled by Welch and Goyal (2008) and updated by Goyal, Welch, and Zafirov (2024). The original data can be obtained from the authors' distribution page.
+- `crsp_index.csv` — CRSP value-weighted market index returns. Restricted-access; obtain through an institutional WRDS/CRSP subscription (<https://wrds-www.wharton.upenn.edu/>).
+
+The authors did not have any special access privileges that others would not have.
 
 ## Requirements
 
@@ -76,7 +84,7 @@ python stage1/run_stage1.py \
   --order_fixed --n_jobs 4
 ```
 
-GPR example:
+GPR example (supplementary):
 
 ```bash
 python stage1/run_stage1.py \
@@ -109,6 +117,11 @@ python run_experiments.py \
 python run_experiments.py --config final_config.json --dry_run
 ```
 
-## Public outputs
+## Summary outputs
 
-Public forecast files contain **prediction-only** series (realized target values excluded to respect third-party data terms). Summary files are included for verification of the main empirical findings. Users with access to the original source data can reconstruct the full workflow.
+The `output/` directories contain summary-level result files for verification of the main empirical findings reported in the paper. Users with access to the original source data can reconstruct the full workflow and all intermediate outputs using the provided code and configuration.
+
+## References
+
+- Welch, I., & Goyal, A. (2008). A comprehensive look at the empirical performance of equity premium prediction. *The Review of Financial Studies*, 21(4), 1455–1508.
+- Goyal, A., Welch, I., & Zafirov, A. (2024). A comprehensive 2022 look at the empirical performance of equity premium prediction. *The Review of Financial Studies*, 37(11), 3490–3557.
