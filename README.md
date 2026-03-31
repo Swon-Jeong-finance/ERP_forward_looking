@@ -6,10 +6,11 @@
 
 Replication code for the two-stage equity risk premium forecasting framework described in:
 
-> Huh, J., Jeon, J., & Jeong, S. (2026). Equity Premium Forecasting with Reliability-Screened Forward-Looking Signals. *PLOS ONE* (under review).
+> Huh, J., Jeon, J., & Jeong, S. (2026). Equity Premium Forecasting with Reliability-Screened Forward-Looking Signals. *PLOS ONE* (under revision).
 
-- **Stage 1:** Predictor-level forecasting (ARIMAX–GARCH) with mixed-frequency alignment and real-time publication lags. The main results use ARIMAX–GARCH; ETS and GPR alternatives are provided for the supplementary robustness exercises (S1 Appendix).
-- **Stage 2:** Equity risk premium forecasting with Random Forest, optional SHAP screening and dimension reduction (PCA / PLS), and forecast evaluation. Supplementary results with XGBoost and LightGBM are reported in S2 Appendix.
+- **Stage 1:** Predictor-level forecasting (ARIMAX–GARCH) with mixed-frequency alignment and real-time publication lags. The main results use ARIMAX–GARCH.
+- 
+- **Stage 2:** Equity risk premium forecasting with Random Forest, optional SHAP screening and dimension reduction (PCA / PLS), and forecast evaluation. 
 
 Third-party raw data files are **not distributed**; see [Data](#data) below.
 
@@ -65,7 +66,6 @@ The authors did not have any special access privileges that others would not hav
 ```bash
 pip install numpy pandas scipy scikit-learn statsmodels matplotlib tqdm threadpoolctl
 # optional
-pip install arch shap lightgbm xgboost
 ```
 
 ## Quick start
@@ -79,20 +79,6 @@ python stage1/run_stage1.py \
   --exo_map stage1/exo_arimax.json \
   --data_dir stage1/data \
   --save_dir "stage1/results(arima)" \
-  --start_year 1952 --end_year 2024 \
-  --initial_train_years 20 \
-  --order_fixed --n_jobs 4
-```
-
-GPR example (supplementary):
-
-```bash
-python stage1/run_stage1.py \
-  --model gpr \
-  --targets default \
-  --exo_map stage1/exo_gpr.json \
-  --data_dir stage1/data \
-  --save_dir stage1/results \
   --start_year 1952 --end_year 2024 \
   --initial_train_years 20 \
   --order_fixed --n_jobs 4
