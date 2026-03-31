@@ -1,0 +1,114 @@
+# Robust Risk Premium Forecasting
+
+Replication code for a two-stage equity risk premium forecasting framework.
+
+- **Stage 1:** predictor-level forecasting (ARIMAX / ETS / GPR) with mixed-frequency alignment and real-time publication lags.
+- **Stage 2:** equity risk premium forecasting with Random Forest, optional SHAP screening and dimension reduction (PCA / PLS), and forecast evaluation.
+
+Third-party raw data files are **not distributed**; see [Data](#data) below.
+
+## Repository structure
+
+```text
+.
+├── stage1/
+│   ├── data/                    # local, not distributed
+│   ├── exo_arimax.json
+│   ├── exo_gpr.json
+│   ├── run_stage1.py
+│   ├── stage1.py
+│   └── results(arima)/1952(fixed order)/ ...
+└── stage2/
+    ├── data/                    # local, not distributed
+    ├── benchmark/               # benchmark portfolio scripts
+    ├── output/
+    ├── analysis.py
+    ├── collect_vol_qlike.py
+    ├── config.py
+    ├── data_loader.py
+    ├── evaluation.py
+    ├── final_config.json
+    ├── pipeline.py
+    ├── plot_shap_bubble.py
+    └── run_experiments.py
+```
+
+## Data
+
+Both stages expect a local `data/` directory. Stage 2 additionally reads Stage 1 outputs.
+
+```text
+stage1/data/                     stage2/data/
+├── monthly.csv                  ├── monthly.csv
+├── quarterly.csv                ├── quarterly.csv
+└── yearly.csv                   ├── yearly.csv
+                                 └── crsp_index.csv  # optional
+```
+
+**Sources:**
+
+- `monthly.csv`, `quarterly.csv`, `yearly.csv` — constructed from the publicly downloadable predictor data on [Amit Goyal's website](https://sites.google.com/view/agoyal145).
+- `crsp_index.csv` — CRSP value-weighted market index returns. Restricted-access; obtain through WRDS/CRSP.
+
+## Requirements
+
+**Python 3.10+** (uses `X | Y` type union syntax).
+
+```bash
+pip install numpy pandas scipy scikit-learn statsmodels matplotlib tqdm threadpoolctl
+# optional
+pip install arch shap lightgbm xgboost
+```
+
+## Quick start
+
+### Stage 1
+
+```bash
+python stage1/run_stage1.py \
+  --model arimax \
+  --targets default \
+  --exo_map stage1/exo_arimax.json \
+  --data_dir stage1/data \
+  --save_dir "stage1/results(arima)" \
+  --start_year 1952 --end_year 2024 \
+  --initial_train_years 20 \
+  --order_fixed --n_jobs 4
+```
+
+GPR example:
+
+```bash
+python stage1/run_stage1.py \
+  --model gpr \
+  --targets default \
+  --exo_map stage1/exo_gpr.json \
+  --data_dir stage1/data \
+  --save_dir stage1/results \
+  --start_year 1952 --end_year 2024 \
+  --initial_train_years 20 \
+  --order_fixed --n_jobs 4
+```
+
+### Stage 2
+
+```bash
+cd stage2
+python run_experiments.py --config final_config.json
+```
+
+`final_config.json` specifies a shared hyperparameter grid and a list of experiment combinations (`dim_reduction`, `feature_type`, `index_type`, `r2_cut`, `topN`, `n_components`).
+
+Single-combo and dry-run examples:
+
+```bash
+python run_experiments.py \
+  --dim_reduction pca --feature_type dual \
+  --index_type sp500 --r2_cut 0.05 --n_components 2
+
+python run_experiments.py --config final_config.json --dry_run
+```
+
+## Public outputs
+
+Public forecast files contain **prediction-only** series (realized target values excluded to respect third-party data terms). Summary files are included for verification of the main empirical findings. Users with access to the original source data can reconstruct the full workflow.
