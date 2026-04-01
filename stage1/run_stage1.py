@@ -302,7 +302,10 @@ def main():
     os.makedirs(out_root, exist_ok=True)
 
     summary_path = os.path.join(out_root, args.summary_name)
-    pd.DataFrame(results).to_csv(summary_path, index=False)
+    df_summary = pd.DataFrame(results)
+    if 'OOS_R2' in df_summary.columns:
+        df_summary = df_summary.sort_values('OOS_R2', ascending=False).reset_index(drop=True)
+    df_summary.to_csv(summary_path, index=False)
 
     if failures:
         err_path = os.path.join(out_root, args.summary_name.replace('.csv', '_errors.csv'))
